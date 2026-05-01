@@ -1,19 +1,34 @@
-// System-Prompt: definiert die Rolle und das Verhalten des CA
 const SYSTEM_PROMPT =
   "Du bist ein Gesprächspartner in einem Konfliktgespräch. Reagiere ruhig, sachlich und verständnisvoll.";
 
-// Gesprächsverlauf — wird bei jedem Senden vollständig an die API übergeben
 const conversationHistory = [
   { role: "system", content: SYSTEM_PROMPT },
 ];
 
-// DOM-Elemente
-const chatContainer = document.getElementById("chat-container");
-const userInput = document.getElementById("user-input");
-const sendButton = document.getElementById("send-button");
+const chatContainer    = document.getElementById("chat-container");
+const userInput        = document.getElementById("user-input");
+const sendButton       = document.getElementById("send-button");
+const characterStatus  = document.getElementById("character-status");
+const robotAvatar      = document.getElementById("robot-avatar");
+const mouthLeds        = [
+  document.getElementById("mouth-led-1"),
+  document.getElementById("mouth-led-2"),
+  document.getElementById("mouth-led-3"),
+];
 
-// Fügt eine Chatblase in den Chat ein
-// role: "user" oder "assistant"
+// Roboter-Zustand: "idle" oder "speaking"
+function setRobotState(state) {
+  if (state === "speaking") {
+    robotAvatar.classList.add("robot-speaking");
+    characterStatus.textContent = "denkt nach …";
+    mouthLeds.forEach(led => led.setAttribute("fill", "#f97316"));
+  } else {
+    robotAvatar.classList.remove("robot-speaking");
+    characterStatus.textContent = "wartet auf dich …";
+    mouthLeds.forEach(led => led.setAttribute("fill", "#d1d5db"));
+  }
+}
+
 function appendMessage(role, text) {
   const wrapper = document.createElement("div");
   wrapper.classList.add("flex", "mb-3");
@@ -25,21 +40,18 @@ function appendMessage(role, text) {
 
   if (role === "user") {
     wrapper.classList.add("justify-end");
-    bubble.classList.add("bg-blue-500", "text-white", "rounded-br-sm");
+    bubble.classList.add("bg-orange-500", "text-white", "rounded-br-sm");
   } else {
     wrapper.classList.add("justify-start");
-    bubble.classList.add("bg-white", "text-gray-800", "rounded-bl-sm", "shadow-sm");
+    bubble.classList.add("bg-white", "text-gray-800", "rounded-bl-sm", "shadow-sm", "border", "border-orange-100");
   }
 
   bubble.textContent = text;
   wrapper.appendChild(bubble);
   chatContainer.appendChild(wrapper);
-
-  // Automatisch nach unten scrollen
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// Zeigt einen Lade-Indikator während der CA antwortet
 function appendTypingIndicator() {
   const wrapper = document.createElement("div");
   wrapper.id = "typing-indicator";
@@ -47,10 +59,10 @@ function appendTypingIndicator() {
 
   const bubble = document.createElement("div");
   bubble.classList.add(
-    "bg-white", "text-gray-400", "px-4", "py-2", "rounded-2xl", "rounded-bl-sm",
-    "text-sm", "shadow-sm", "italic"
+    "bg-white", "text-orange-400", "px-4", "py-2", "rounded-2xl", "rounded-bl-sm",
+    "text-sm", "shadow-sm", "italic", "border", "border-orange-100"
   );
-  bubble.textContent = "tippt…";
+  bubble.textContent = "tippt …";
 
   wrapper.appendChild(bubble);
   chatContainer.appendChild(wrapper);
@@ -58,58 +70,59 @@ function appendTypingIndicator() {
 }
 
 function removeTypingIndicator() {
-  const indicator = document.getElementById("typing-indicator");
-  if (indicator) indicator.remove();
+  document.getElementById("typing-indicator")?.remove();
 }
 
-// Sendet die Nutzernachricht an Ollama und zeigt die Antwort an
 async function sendMessage() {
   const text = userInput.value.trim();
   if (!text) return;
 
-  // Eingabefeld leeren und Button sperren
   userInput.value = "";
+  userInput.style.height = "auto";
   sendButton.disabled = true;
 
-  // Nutzernachricht anzeigen und in den Verlauf aufnehmen
   appendMessage("user", text);
   conversationHistory.push({ role: "user", content: text });
 
+  setRobotState("speaking");
   appendTypingIndicator();
 
   try {
+    const requestBody = CONFIG.useBackend
+      ? { messages: conversationHistory }
+      : { model: CONFIG.model, messages: conversationHistory, stream: false };
+
     const response = await fetch(CONFIG.apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: CONFIG.model,
-        messages: conversationHistory,
-        stream: false, // Antwort als ganzes Objekt, kein Streaming
-      }),
+      body: JSON.stringify(requestBody),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP-Fehler: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
 
     const data = await response.json();
-    const assistantText = data.message?.content ?? "(Keine Antwort erhalten)";
+    const assistantText = CONFIG.useBackend
+      ? (data.reply ?? "(Keine Antwort erhalten)")
+      : (data.message?.content ?? "(Keine Antwort erhalten)");
 
-    // Antwort in den Verlauf aufnehmen und anzeigen
     conversationHistory.push({ role: "assistant", content: assistantText });
     removeTypingIndicator();
     appendMessage("assistant", assistantText);
   } catch (error) {
     removeTypingIndicator();
-    appendMessage("assistant", `Fehler: ${error.message}. Läuft Ollama lokal?`);
+    const isCors = error instanceof TypeError && error.message.includes("fetch");
+    const hint = isCors
+      ? "CORS-Fehler: Starte Ollama mit OLLAMA_ORIGINS=\"*\" neu."
+      : `Fehler: ${error.message}. Läuft Ollama lokal?`;
+    appendMessage("assistant", hint);
     console.error("Fehler beim API-Aufruf:", error);
   } finally {
+    setRobotState("idle");
     sendButton.disabled = false;
     userInput.focus();
   }
 }
 
-// Enter-Taste sendet die Nachricht (Shift+Enter für Zeilenumbruch)
 userInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
