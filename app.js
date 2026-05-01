@@ -5,72 +5,109 @@ const conversationHistory = [
   { role: "system", content: SYSTEM_PROMPT },
 ];
 
-const chatContainer    = document.getElementById("chat-container");
-const userInput        = document.getElementById("user-input");
-const sendButton       = document.getElementById("send-button");
-const characterStatus  = document.getElementById("character-status");
-const robotAvatar      = document.getElementById("robot-avatar");
-const mouthLeds        = [
+const chatContainer   = document.getElementById("chat-container");
+const userInput       = document.getElementById("user-input");
+const sendButton      = document.getElementById("send-button");
+const robotBg         = document.getElementById("robot-bg");
+const robotAvatar     = document.getElementById("robot-avatar");
+const characterStatus = document.getElementById("character-status");
+const mouthLeds       = [
   document.getElementById("mouth-led-1"),
   document.getElementById("mouth-led-2"),
   document.getElementById("mouth-led-3"),
 ];
 
-// Roboter-Zustand: "idle" oder "speaking"
 function setRobotState(state) {
   if (state === "speaking") {
+    robotBg.classList.add("active");
     robotAvatar.classList.add("robot-speaking");
     characterStatus.textContent = "denkt nach …";
     mouthLeds.forEach(led => led.setAttribute("fill", "#f97316"));
   } else {
+    robotBg.classList.remove("active");
     robotAvatar.classList.remove("robot-speaking");
     characterStatus.textContent = "wartet auf dich …";
     mouthLeds.forEach(led => led.setAttribute("fill", "#d1d5db"));
   }
 }
 
-function appendMessage(role, text) {
+// Erstellt eine leere Sprechblase im Chat und gibt das Text-Element zurück
+function createBubble(role) {
   const wrapper = document.createElement("div");
-  wrapper.classList.add("flex", "mb-3");
+  wrapper.classList.add("flex", "mb-4", "bubble-rise", "justify-center");
 
   const bubble = document.createElement("div");
-  bubble.classList.add(
-    "max-w-xs", "lg:max-w-md", "px-4", "py-2", "rounded-2xl", "text-sm", "whitespace-pre-wrap"
-  );
+  bubble.classList.add(role === "user" ? "user-bubble" : "assistant-bubble");
 
-  if (role === "user") {
-    wrapper.classList.add("justify-end");
-    bubble.classList.add("bg-orange-500", "text-white", "rounded-br-sm");
-  } else {
-    wrapper.classList.add("justify-start");
-    bubble.classList.add("bg-white", "text-gray-800", "rounded-bl-sm", "shadow-sm", "border", "border-orange-100");
+  wrapper.appendChild(bubble);
+  chatContainer.appendChild(wrapper);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  return bubble;
+}
+
+function appendMessage(role, text) {
+  const bubble = createBubble(role);
+  bubble.textContent = text;
+  return bubble;
+}
+
+// Ollama-Antwort wird live Wort für Wort gestreamt
+async function streamOllamaResponse() {
+  const bubble = createBubble("assistant");
+  bubble.textContent = "…";
+
+  const response = await fetch(CONFIG.apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: CONFIG.model,
+      messages: conversationHistory,
+      stream: true,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
+
+  const reader  = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText  = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    for (const line of decoder.decode(value).split("\n").filter(Boolean)) {
+      try {
+        const chunk = JSON.parse(line);
+        if (chunk.message?.content) {
+          fullText += chunk.message.content;
+          bubble.textContent = fullText;
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      } catch { /* unvollständiges JSON-Fragment, überspringen */ }
+    }
   }
 
+  return fullText;
+}
+
+// Backend-Antwort (Phase 2 – Groq), kein Streaming
+async function fetchBackendResponse() {
+  const bubble = createBubble("assistant");
+  bubble.textContent = "…";
+
+  const response = await fetch(CONFIG.apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: conversationHistory }),
+  });
+
+  if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
+
+  const data = await response.json();
+  const text = data.reply ?? "(Keine Antwort erhalten)";
   bubble.textContent = text;
-  wrapper.appendChild(bubble);
-  chatContainer.appendChild(wrapper);
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function appendTypingIndicator() {
-  const wrapper = document.createElement("div");
-  wrapper.id = "typing-indicator";
-  wrapper.classList.add("flex", "mb-3", "justify-start");
-
-  const bubble = document.createElement("div");
-  bubble.classList.add(
-    "bg-white", "text-orange-400", "px-4", "py-2", "rounded-2xl", "rounded-bl-sm",
-    "text-sm", "shadow-sm", "italic", "border", "border-orange-100"
-  );
-  bubble.textContent = "tippt …";
-
-  wrapper.appendChild(bubble);
-  chatContainer.appendChild(wrapper);
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function removeTypingIndicator() {
-  document.getElementById("typing-indicator")?.remove();
+  return text;
 }
 
 async function sendMessage() {
@@ -85,36 +122,18 @@ async function sendMessage() {
   conversationHistory.push({ role: "user", content: text });
 
   setRobotState("speaking");
-  appendTypingIndicator();
 
   try {
-    const requestBody = CONFIG.useBackend
-      ? { messages: conversationHistory }
-      : { model: CONFIG.model, messages: conversationHistory, stream: false };
-
-    const response = await fetch(CONFIG.apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
-
-    const data = await response.json();
     const assistantText = CONFIG.useBackend
-      ? (data.reply ?? "(Keine Antwort erhalten)")
-      : (data.message?.content ?? "(Keine Antwort erhalten)");
+      ? await fetchBackendResponse()
+      : await streamOllamaResponse();
 
     conversationHistory.push({ role: "assistant", content: assistantText });
-    removeTypingIndicator();
-    appendMessage("assistant", assistantText);
   } catch (error) {
-    removeTypingIndicator();
     const isCors = error instanceof TypeError && error.message.includes("fetch");
-    const hint = isCors
+    appendMessage("assistant", isCors
       ? "CORS-Fehler: Starte Ollama mit OLLAMA_ORIGINS=\"*\" neu."
-      : `Fehler: ${error.message}. Läuft Ollama lokal?`;
-    appendMessage("assistant", hint);
+      : `Fehler: ${error.message}`);
     console.error("Fehler beim API-Aufruf:", error);
   } finally {
     setRobotState("idle");

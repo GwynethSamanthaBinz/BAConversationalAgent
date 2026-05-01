@@ -1,8 +1,32 @@
+/* ── Roboter-Hintergrund ─────────────────────────────────────── */
+
+#robot-bg {
+  opacity: 0.2;
+  transition: opacity 0.4s ease;
+}
+
+/* Wenn der Roboter "denkt", wird er sichtbarer */
+#robot-bg.active {
+  opacity: 0.65;
+}
+
+/* Avatar-Größe (gilt auch wenn SVG durch <img> ersetzt wird) */
+#robot-avatar {
+  width:  16rem;  /* 256px */
+  height: 16rem;
+}
+
+#robot-avatar svg,
+#robot-avatar img {
+  width:  14rem;
+  height: 14rem;
+}
+
 /* ── Roboter-Animationen ─────────────────────────────────────── */
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-  50%       { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); }
+  50%       { box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
 }
 
 @keyframes blink {
@@ -10,25 +34,67 @@
   95%            { transform: scaleY(0.1); }
 }
 
-/* Wird per JS hinzugefügt wenn der Roboter "denkt" */
 .robot-speaking {
   animation: pulse-glow 1.2s ease-in-out infinite;
 }
 
-/* Auf beide Augen-Gruppen im SVG angewendet */
 .robot-eye {
   animation: blink 4s ease-in-out infinite;
   transform-origin: center;
 }
 
-/* Leichter Versatz damit beide Augen nicht synchron blinken */
 .robot-eye:last-of-type {
   animation-delay: 0.1s;
 }
 
+/* ── Sprechblasen-Stil ───────────────────────────────────────── */
+
+/* KI-Antwort: groß, klar, prominent – wie gesprochenes Wort */
+.assistant-bubble {
+  max-width: 520px;
+  width: 100%;
+  padding: 18px 24px;
+  background: white;
+  border-radius: 18px;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: #1f2937;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  white-space: pre-wrap;
+}
+
+/* Nutzereingabe: klein, dezent – wie eine Gesprächsreaktion */
+.user-bubble {
+  max-width: 380px;
+  padding: 8px 16px;
+  background: rgba(249, 115, 22, 0.1);
+  border-radius: 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #9a3412;
+  font-style: italic;
+  white-space: pre-wrap;
+}
+
+/* ── Sprechblasen-Animation (von unten nach oben) ───────────── */
+
+@keyframes bubble-rise {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bubble-rise {
+  animation: bubble-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 /* ── Eingabefeld ─────────────────────────────────────────────── */
 
-/* Begrenzt die maximale Höhe beim automatischen Wachsen (app.js) */
 #user-input {
   max-height: 120px;
 }

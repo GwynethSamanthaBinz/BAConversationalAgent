@@ -11,78 +11,72 @@
   <body class="bg-orange-50 h-screen flex flex-col overflow-hidden">
 
     <!-- Header -->
-    <header class="bg-orange-600 text-white px-6 py-3 shadow-md shrink-0">
+    <header class="bg-orange-600 text-white px-6 py-3 shadow-md shrink-0 relative z-20">
       <p class="text-xs font-semibold uppercase tracking-widest text-orange-200">Szenario</p>
       <h1 class="text-base font-medium leading-snug">
         Konfliktgespräch: Mitarbeiterin fühlt sich durch Kollegin übergangen
       </h1>
     </header>
 
-    <!-- Charakter-Bereich -->
-    <div class="bg-white border-b border-orange-100 shrink-0 flex flex-col items-center pt-5 pb-4 shadow-sm">
+    <!-- Hauptbereich: Hintergrund + Chat übereinander -->
+    <div class="relative flex-1 overflow-hidden">
 
-      <!-- Roboter-Avatar -->
-      <div id="robot-avatar" class="w-28 h-28 rounded-full border-4 border-orange-400 bg-orange-50 flex items-center justify-center transition-all duration-300">
-        <svg viewBox="0 0 100 100" class="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
+      <!-- ── Roboter-Hintergrund (mittig, halbtransparent) ──────────
+           Zum späteren Austauschen: SVG-Block entfernen und ersetzen mit
+           <img src="charakter.png" alt="KI-Gesprächspartner">
+           Das #robot-bg-Styling in style.css gilt automatisch auch für <img>.
+      ──────────────────────────────────────────────────────────── -->
+      <div id="robot-bg" class="absolute inset-0 flex flex-col items-center justify-start pt-8 pointer-events-none z-0">
 
-          <!-- Antenne -->
-          <line x1="50" y1="4" x2="50" y2="17" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="50" cy="4" r="4" fill="#f97316"/>
+        <div id="robot-avatar" class="rounded-full border-4 border-orange-400 bg-orange-50 flex items-center justify-center">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="50" y1="4" x2="50" y2="17" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="50" cy="4" r="4" fill="#f97316"/>
+            <rect x="14" y="17" width="72" height="54" rx="16" fill="#f3f4f6"/>
+            <rect x="14" y="17" width="72" height="54" rx="16" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
+            <rect x="6"  y="30" width="8" height="14" rx="4" fill="#d1d5db"/>
+            <rect x="86" y="30" width="8" height="14" rx="4" fill="#d1d5db"/>
+            <circle cx="34" cy="37" r="11" fill="white"/>
+            <circle cx="66" cy="37" r="11" fill="white"/>
+            <g class="robot-eye">
+              <circle cx="34" cy="37" r="7" fill="#f97316"/>
+              <circle cx="36" cy="35" r="2.5" fill="white" opacity="0.8"/>
+              <circle cx="34" cy="37" r="3" fill="#c2410c"/>
+            </g>
+            <g class="robot-eye">
+              <circle cx="66" cy="37" r="7" fill="#f97316"/>
+              <circle cx="68" cy="35" r="2.5" fill="white" opacity="0.8"/>
+              <circle cx="66" cy="37" r="3" fill="#c2410c"/>
+            </g>
+            <rect x="30" y="57" width="40" height="9" rx="4.5" fill="#e5e7eb"/>
+            <circle id="mouth-led-1" cx="38" cy="61.5" r="2.5" fill="#d1d5db"/>
+            <circle id="mouth-led-2" cx="50" cy="61.5" r="2.5" fill="#d1d5db"/>
+            <circle id="mouth-led-3" cx="62" cy="61.5" r="2.5" fill="#d1d5db"/>
+          </svg>
+        </div>
 
-          <!-- Kopf -->
-          <rect x="14" y="17" width="72" height="54" rx="16" fill="#f3f4f6"/>
-          <rect x="14" y="17" width="72" height="54" rx="16" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
-
-          <!-- Ohren / Bolzen -->
-          <rect x="6"  y="30" width="8" height="14" rx="4" fill="#d1d5db"/>
-          <rect x="86" y="30" width="8" height="14" rx="4" fill="#d1d5db"/>
-
-          <!-- Augen – Außenring -->
-          <circle cx="34" cy="37" r="11" fill="white"/>
-          <circle cx="66" cy="37" r="11" fill="white"/>
-
-          <!-- Augen – Iris (blinken-Animation) -->
-          <g class="robot-eye">
-            <circle cx="34" cy="37" r="7" fill="#f97316"/>
-            <circle cx="36" cy="35" r="2.5" fill="white" opacity="0.8"/>
-            <circle cx="34" cy="37" r="3" fill="#c2410c"/>
-          </g>
-          <g class="robot-eye">
-            <circle cx="66" cy="37" r="7" fill="#f97316"/>
-            <circle cx="68" cy="35" r="2.5" fill="white" opacity="0.8"/>
-            <circle cx="66" cy="37" r="3" fill="#c2410c"/>
-          </g>
-
-          <!-- Mund -->
-          <rect x="30" y="57" width="40" height="9" rx="4.5" fill="#e5e7eb"/>
-          <!-- Mund-LEDs: leuchten orange wenn "spricht" -->
-          <circle id="mouth-led-1" cx="38" cy="61.5" r="2.5" fill="#d1d5db"/>
-          <circle id="mouth-led-2" cx="50" cy="61.5" r="2.5" fill="#d1d5db"/>
-          <circle id="mouth-led-3" cx="62" cy="61.5" r="2.5" fill="#d1d5db"/>
-
-        </svg>
+        <p id="character-status" class="mt-3 text-sm font-medium text-gray-500">wartet auf dich …</p>
       </div>
 
-      <p class="mt-2 text-sm font-bold text-gray-700 tracking-wide">KI-Gesprächspartner</p>
-      <p id="character-status" class="text-xs text-gray-400 mt-0.5 h-4">wartet auf dich …</p>
+      <!-- ── Chat-Verlauf (scrollbar, liegt vor dem Roboter) ───────── -->
+      <main id="chat-container" class="absolute inset-0 overflow-y-auto z-10 px-4 pb-4">
+
+        <!-- Spacer: erste Nachricht erscheint ab Bildschirmmitte -->
+        <div class="h-1/2"></div>
+
+        <!-- Begrüßungsnachricht -->
+        <div class="flex mb-3 justify-center">
+          <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-2xl rounded-bl-sm text-sm
+                      bg-white text-gray-800 shadow-md border border-orange-100">
+            Hallo! Ich bin bereit für unser Gespräch. Wie kann ich Ihnen helfen?
+          </div>
+        </div>
+
+      </main>
     </div>
 
-    <!-- Chat-Verlauf -->
-    <main
-      id="chat-container"
-      class="flex-1 overflow-y-auto px-4 py-4 space-y-1"
-    >
-      <!-- Begrüßungsnachricht -->
-      <div class="flex mb-3 justify-start">
-        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-2xl rounded-bl-sm text-sm
-                    bg-white text-gray-800 shadow-sm border border-orange-100">
-          Hallo! Ich bin bereit für unser Gespräch. Wie kann ich Ihnen helfen?
-        </div>
-      </div>
-    </main>
-
     <!-- Eingabe -->
-    <footer class="bg-white border-t border-orange-100 px-4 py-3 shrink-0">
+    <footer class="bg-white border-t border-orange-100 px-4 py-3 shrink-0 relative z-20">
       <div class="flex items-end gap-2 max-w-3xl mx-auto">
         <textarea
           id="user-input"
@@ -92,7 +86,6 @@
                  focus:outline-none focus:ring-2 focus:ring-orange-400 transition overflow-hidden"
           oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"
         ></textarea>
-
         <button
           id="send-button"
           class="shrink-0 bg-orange-500 hover:bg-orange-600 disabled:opacity-50
