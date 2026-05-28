@@ -38,7 +38,8 @@ async function loadSystemPrompt() {
 
   function createBubble(role) {
     const wrapper = document.createElement("div");
-    wrapper.classList.add("flex", "mb-4", "bubble-rise", "justify-center");
+    const alignment = role === "user" ? "justify-end" : "justify-center";
+    wrapper.classList.add("flex", "mb-4", "bubble-rise", "px-2", alignment);
 
     const bubble = document.createElement("div");
     bubble.classList.add(role === "user" ? "user-bubble" : "assistant-bubble");
@@ -84,7 +85,7 @@ async function loadSystemPrompt() {
           const chunk = JSON.parse(line);
           if (chunk.message?.content) {
             fullText += chunk.message.content;
-            bubble.textContent = fullText;
+            bubble.textContent = fullText.trimStart();
             chatContainer.scrollTop = chatContainer.scrollHeight;
           }
         } catch { /* unvollständiges JSON-Fragment, überspringen */ }
@@ -107,7 +108,7 @@ async function loadSystemPrompt() {
     if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
 
     const data = await response.json();
-    const text = data.reply ?? "(Keine Antwort erhalten)";
+    const text = (data.reply ?? "(Keine Antwort erhalten)").trim();
     bubble.textContent = text;
     return text;
   }
@@ -152,4 +153,13 @@ async function loadSystemPrompt() {
   });
 
   sendButton.addEventListener("click", sendMessage);
+
+  const feedbackButton = document.getElementById("feedback-button");
+  feedbackButton.addEventListener("click", () => {
+    if (sendButton.disabled) return;
+    userInput.value = "Kannst du mir bitte Feedback zu meinem bisherigen Gesprächsverhalten geben? Was habe ich gut gemacht und was sollte ich verbessern?";
+    userInput.style.height = "auto";
+    userInput.style.height = userInput.scrollHeight + "px";
+    sendMessage();
+  });
 })();
