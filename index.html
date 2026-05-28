@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Conversational Agent – Bachelorarbeit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -12,33 +15,33 @@
 
     <!-- Header -->
     <header class="bg-orange-600 text-white px-6 py-3 shadow-md shrink-0 relative z-20 flex items-center justify-between gap-4">
-      <div>
+      <div class="min-w-0 overflow-hidden">
         <p class="text-xs font-semibold uppercase tracking-widest text-orange-200">Konfliktgespräch</p>
         <h1 class="text-base font-medium leading-snug">
           Szenario: Luca trägt nicht zur gemeinsamen Gruppenarbeit bei
         </h1>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <button
-          id="briefing-button"
-          title="Briefing erneut anzeigen"
-          class="w-9 h-9 bg-white bg-opacity-20 hover:bg-opacity-30 active:bg-opacity-40
-                 text-white font-bold text-base rounded-xl transition flex items-center justify-center"
-        >
-          ?
-        </button>
-        <button
-          id="feedback-button"
-          class="bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
-                 hover:bg-orange-50 active:bg-orange-100 transition"
-        >
-          Beenden und<br>Feedback anfordern
-        </button>
-      </div>
+      <button
+        id="feedback-button"
+        class="shrink-0 bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
+               hover:bg-orange-50 active:bg-orange-100 transition"
+      >
+        Beenden und<br>Feedback anfordern
+      </button>
     </header>
 
     <!-- Hauptbereich: Hintergrund + Chat übereinander -->
     <div class="relative flex-1 overflow-hidden">
+
+      <!-- ? Button: unterhalb des Headers, rechts positioniert -->
+      <button
+        id="briefing-button"
+        title="Briefing erneut anzeigen"
+        class="absolute top-2 right-6 z-20 w-9 h-9 bg-white text-orange-600 font-bold text-base
+               rounded-xl shadow-sm hover:bg-orange-50 active:bg-orange-100 transition flex items-center justify-center"
+      >
+        ?
+      </button>
 
       <!-- ── Roboter-Hintergrund ──────────────────────────────────── -->
       <div id="robot-bg" class="absolute inset-0 flex flex-col items-center justify-start pt-8 pointer-events-none z-0">
@@ -76,7 +79,7 @@
       </div>
 
       <!-- ── Chat-Verlauf ───────────────────────────────────────────── -->
-      <main id="chat-container" class="absolute inset-x-0 bottom-0 overflow-y-auto z-10 px-4 pb-4" style="top: 21rem;">
+      <main id="chat-container" class="absolute inset-x-0 bottom-0 overflow-y-auto z-10 px-4 pb-4">
 
         <!-- Erste Roboter-Nachricht -->
         <div class="flex mb-4 px-2 justify-center">
@@ -137,7 +140,7 @@
 
         <!-- Fixer Header -->
         <div class="px-8 pt-8 pb-4 shrink-0">
-          <h2 class="text-lg font-bold text-gray-800">Deine Konfliktsituation</h2>
+          <h2 class="text-lg font-bold text-gray-800">Das Konfliktszenario :</h2>
         </div>
 
         <!-- Scrollbarer Inhalt -->
@@ -146,10 +149,8 @@
           <div>
             <p class="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-1">Deine Rolle — Alex</p>
             <p class="text-sm text-gray-600 leading-relaxed">
-              Du bist an einer Gruppenarbeit mit einem Umfang von 12 ECTS beteiligt,
-              zusammen mit deinen Kommilitonen Sarah und Luca, und bist die
-              organisierende Person in der Gruppe. Du hast die Aufgaben verteilt,
-              die Deadlines gesetzt und versuchst das Projekt zusammenzuhalten.
+              Zusammen mit deinen Kommilitonen Sarah und Luca, bist du an einer Gruppenarbeit mit einem Umfang von 12 ECTS beteiligt,
+              Du hast die Aufgaben verteilt, die Deadlines gesetzt und versuchst das Projekt zusammenzuhalten.
             </p>
           </div>
 
@@ -158,7 +159,7 @@
             <p class="text-sm text-gray-600 leading-relaxed">
               Deine Gruppe muss in zwei Wochen eine schriftliche Ausarbeitung und eine
               Präsentation zum Thema „KI im Bildungsbereich" einreichen. Die Bewertung
-              erfolgt als Gruppennote. Während die Zusammenarbeit mit Sarah gut läuft,
+              erfolgt einheitlich als Gruppennote. Während die Zusammenarbeit mit Sarah gut läuft,
               bereitet dir Luca Sorgen. Er hat zwei vereinbarte Aufgaben nicht geliefert,
               auf Nachrichten kaum reagiert und ein Gruppentreffen kurzfristig abgesagt.
               Du hast ihn bereits zweimal erinnert, ohne Ergebnis. Heute suchst du das
@@ -190,7 +191,7 @@
               Du kannst das Rollenspiel jederzeit beenden, indem du
               <strong class="text-gray-700">„Stop"</strong>,
               <strong class="text-gray-700">„Ende"</strong>,
-              <strong class="text-gray-700">„Danke"</strong> oder
+            oder
               <strong class="text-gray-700">„Feedback"</strong> schreibst oder den Button
               <strong class="text-gray-700">„Beenden und Feedback anfordern"</strong> drückst.
               Luca wechselt dann in den Feedbackmodus und gibt dir eine Analyse
