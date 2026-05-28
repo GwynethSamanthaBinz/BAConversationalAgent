@@ -132,9 +132,9 @@ async function loadSystemPrompt() {
 
       conversationHistory.push({ role: "assistant", content: assistantText });
     } catch (error) {
-      const isCors = error instanceof TypeError && error.message.includes("fetch");
-      appendMessage("assistant", isCors
-        ? "CORS-Fehler: Starte Ollama mit OLLAMA_ORIGINS=\"*\" neu."
+      const isNetworkError = error instanceof TypeError;
+      appendMessage("assistant", isNetworkError
+        ? "Verbindungsfehler: Ist der Backend-Server gestartet? (node server.js)"
         : `Fehler: ${error.message}`);
       console.error("Fehler beim API-Aufruf:", error);
     } finally {
