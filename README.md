@@ -2,11 +2,11 @@
 
 informationen 
 
-Architektur steht:
-Frontend → Netlify
-Backend → Render
-Datenbank → Supabase
-LLM → SAIA API
+Architektur 
+Frontend: HTML, CSS (Tailwind), JS → Netlify
+Backend: Node.js / Express → Render
+Datenbank: Supabase
+LLM: Qwen3.6-35b-a3b über SAIA Academic Cloud API
 
 ## Lokale Entwicklung
 
