@@ -65,6 +65,7 @@
 */
 body {
   height: 100dvh;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ── Roboter-Animationen ─────────────────────────────────────── */
