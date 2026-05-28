@@ -2,8 +2,8 @@
 
 informationen 
 
-Netlify 
-
-supabase
-
-backend render 
+Architektur steht:
+Frontend → Netlify
+Backend → Render
+Datenbank → Supabase
+LLM → SAIA API
