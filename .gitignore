@@ -428,5 +428,5 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# API Key -niemals committen
-config.js
+# API Key -niemals committen deshlab in env.
+

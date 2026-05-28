@@ -1,5 +1,5 @@
 async function loadSystemPrompt() {
-  const response = await fetch("http://localhost:3000/api/scenario");
+  const response = await fetch(`${CONFIG.apiUrl.replace("/api/chat", "")}/api/scenario`);
   const data = await response.json();
   return data.system_prompt ?? "Du bist ein Gesprächspartner.";
 }

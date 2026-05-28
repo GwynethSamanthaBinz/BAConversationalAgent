@@ -1,26 +1,11 @@
 // ─────────────────────────────────────────────────────────────
 // Backend-Server für den Conversational Agent
 //
-// WARUM dieser Server existiert:
-//   Das Frontend (index.html + app.js) läuft im Browser.
-//   Der Browser darf aus Sicherheitsgründen keine API-Keys
-//   enthalten — jeder könnte sie auslesen (Rechtsklick → Inspect).
-//   Dieser Server liegt "in der Mitte" und hält den Key geheim.
-//
 // DATENFLUSS:
 //   Browser → POST /api/chat → server.js → SAIA API → Antwort zurück
 //
 // LOKAL STARTEN:
-//   node server.js
-//   (oder: npm start)
-//
-// PHASE 1 – Ollama (lokal, ohne Internet):
-//   SERVER_MODE=ollama in .env setzen
-//
-// PHASE 2 – SAIA / Academic Cloud (Produktion):
-//   1. SAIA_API_KEY in .env eintragen
-//   2. SERVER_MODE=saia in .env setzen
-//   3. Auf Render deployen
+//   node server.js  (oder: npm start)
 // ─────────────────────────────────────────────────────────────
 
 import express from "express";
@@ -83,24 +68,8 @@ function buildSaiaRequest(messages) {
   };
 }
 
-function buildOllamaRequest(messages) {
-  return {
-    url: process.env.OLLAMA_URL || "http://localhost:11434/api/chat",
-    headers: { "Content-Type": "application/json" },
-    body: {
-      model: process.env.OLLAMA_MODEL || "llama3.2",
-      messages,
-      stream: false,
-    },
-  };
-}
-
-function extractReply(data, mode) {
-  if (mode === "saia") {
-    return data.choices?.[0]?.message?.content ?? "(Keine Antwort)";
-  }
-  // Ollama-Format
-  return data.message?.content ?? "(Keine Antwort)";
+function extractReply(data) {
+  return data.choices?.[0]?.message?.content ?? "(Keine Antwort)";
 }
 
 // ── Haupt-Endpunkt ─────────────────────────────────────────────
@@ -112,10 +81,7 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: "messages fehlt oder ist kein Array" });
   }
 
-  const mode = process.env.SERVER_MODE || "ollama";
-  const request = mode === "saia"
-    ? buildSaiaRequest(messages)
-    : buildOllamaRequest(messages);
+  const request = buildSaiaRequest(messages);
 
   try {
     const response = await fetch(request.url, {
@@ -131,7 +97,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const data = await response.json();
-    const reply = extractReply(data, mode);
+    const reply = extractReply(data);
 
     const scenario = await loadActiveSystemPrompt();
     await saveConversation(
@@ -155,7 +121,5 @@ app.get("/api/scenario", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  const mode = process.env.SERVER_MODE || "ollama";
-  console.log(`Server läuft auf http://localhost:${PORT}`);
-  console.log(`Modus: ${mode.toUpperCase()}`);
+  console.log(`Server läuft auf Port ${PORT}`);
 });
