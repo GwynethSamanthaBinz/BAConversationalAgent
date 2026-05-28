@@ -12,33 +12,33 @@
 
     <!-- Header -->
     <header class="bg-orange-600 text-white px-6 py-3 shadow-md shrink-0 relative z-20 flex items-center justify-between gap-4">
-      <div>
+      <div class="min-w-0 overflow-hidden">
         <p class="text-xs font-semibold uppercase tracking-widest text-orange-200">Konfliktgespräch</p>
         <h1 class="text-base font-medium leading-snug">
           Szenario: Luca trägt nicht zur gemeinsamen Gruppenarbeit bei
         </h1>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <button
-          id="briefing-button"
-          title="Briefing erneut anzeigen"
-          class="w-9 h-9 bg-white bg-opacity-20 hover:bg-opacity-30 active:bg-opacity-40
-                 text-white font-bold text-base rounded-xl transition flex items-center justify-center"
-        >
-          ?
-        </button>
-        <button
-          id="feedback-button"
-          class="bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
-                 hover:bg-orange-50 active:bg-orange-100 transition"
-        >
-          Beenden und<br>Feedback anfordern
-        </button>
-      </div>
+      <button
+        id="feedback-button"
+        class="shrink-0 bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
+               hover:bg-orange-50 active:bg-orange-100 transition"
+      >
+        Beenden und<br>Feedback anfordern
+      </button>
     </header>
 
     <!-- Hauptbereich: Hintergrund + Chat übereinander -->
     <div class="relative flex-1 overflow-hidden">
+
+      <!-- ? Button: unterhalb des Headers, rechts positioniert -->
+      <button
+        id="briefing-button"
+        title="Briefing erneut anzeigen"
+        class="absolute top-2 right-6 z-20 w-9 h-9 bg-white text-orange-600 font-bold text-base
+               rounded-xl shadow-sm hover:bg-orange-50 active:bg-orange-100 transition flex items-center justify-center"
+      >
+        ?
+      </button>
 
       <!-- ── Roboter-Hintergrund ──────────────────────────────────── -->
       <div id="robot-bg" class="absolute inset-0 flex flex-col items-center justify-start pt-8 pointer-events-none z-0">
@@ -76,7 +76,7 @@
       </div>
 
       <!-- ── Chat-Verlauf ───────────────────────────────────────────── -->
-      <main id="chat-container" class="absolute inset-x-0 bottom-0 overflow-y-auto z-10 px-4 pb-4" style="top: 21rem;">
+      <main id="chat-container" class="absolute inset-x-0 bottom-0 overflow-y-auto z-10 px-4 pb-4">
 
         <!-- Erste Roboter-Nachricht -->
         <div class="flex mb-4 px-2 justify-center">
