@@ -8,21 +8,19 @@
 //   Dieser Server liegt "in der Mitte" und hält den Key geheim.
 //
 // DATENFLUSS:
-//   Browser → POST /api/chat → server.js → Groq API → Antwort zurück
+//   Browser → POST /api/chat → server.js → SAIA API → Antwort zurück
 //
 // LOKAL STARTEN:
 //   node server.js
 //   (oder: npm start)
 //
-// PHASE 1 – Ollama (aktuell):
-//   Noch nicht nötig. Frontend spricht direkt mit Ollama.
-//   Wenn du bereit für Phase 2 bist, .env ausfüllen und hier starten.
+// PHASE 1 – Ollama (lokal, ohne Internet):
+//   SERVER_MODE=ollama in .env setzen
 //
-// PHASE 2 – Groq (Studententest):
-//   1. GROQ_API_KEY in .env eintragen
-//   2. SERVER_MODE=groq in .env setzen
-//   3. In config.js → apiUrl auf "http://localhost:3000/api/chat" ändern
-//   4. Auf Server deployen (Railway, Render, etc.)
+// PHASE 2 – SAIA / Academic Cloud (Produktion):
+//   1. SAIA_API_KEY in .env eintragen
+//   2. SERVER_MODE=saia in .env setzen
+//   3. Auf Render deployen
 // ─────────────────────────────────────────────────────────────
 
 import express from "express";
@@ -35,7 +33,6 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ZUERST dotenv laden!
 dotenv.config();
 
 const supabase = createClient(
@@ -63,37 +60,29 @@ async function saveConversation(sessionId, scenarioId, messages) {
   });
 }
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Erlaubt Anfragen vom Browser (CORS)
-// In Produktion kannst du hier die genaue URL deiner App eintragen
-// z.B.: cors({ origin: "https://deine-app.railway.app" })
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// ── Hilfsfunktionen je nach Modus ──────────────────────────────
+// ── Hilfsfunktionen ────────────────────────────────────────────
 
-// Baut den Request für Groq zusammen
-// Groq nutzt das OpenAI-kompatible Format
-function buildGroqRequest(messages) {
+function buildSaiaRequest(messages) {
   return {
-    url: "https://api.groq.com/openai/v1/chat/completions",
+    url: "https://chat-ai.academiccloud.de/v1/chat/completions",
     headers: {
       "Content-Type": "application/json",
-      // Der API-Key kommt aus .env — niemals direkt hier reinschreiben!
-      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      Authorization: `Bearer ${process.env.SAIA_API_KEY}`,
     },
     body: {
-      model: process.env.GROQ_MODEL || "llama3-8b-8192",
+      model: process.env.SAIA_MODEL || "qwen2.5-72b-instruct",
       messages,
     },
   };
 }
 
-// Baut den Request für Ollama zusammen (lokales Modell)
 function buildOllamaRequest(messages) {
   return {
     url: process.env.OLLAMA_URL || "http://localhost:11434/api/chat",
@@ -106,19 +95,16 @@ function buildOllamaRequest(messages) {
   };
 }
 
-// Liest die Antwort je nach API-Format aus
-// Groq und Ollama liefern leicht unterschiedliche JSON-Strukturen
 function extractReply(data, mode) {
-  if (mode === "groq") {
+  if (mode === "saia") {
     return data.choices?.[0]?.message?.content ?? "(Keine Antwort)";
   }
+  // Ollama-Format
   return data.message?.content ?? "(Keine Antwort)";
 }
 
-// ── Haupt-Endpunkt ──────────────────────────────────────────────
+// ── Haupt-Endpunkt ─────────────────────────────────────────────
 
-// Das Frontend schickt hier seine Nachrichten hin
-// Body: { messages: [ { role, content }, ... ] }
 app.post("/api/chat", async (req, res) => {
   const { messages } = req.body;
 
@@ -126,10 +112,9 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: "messages fehlt oder ist kein Array" });
   }
 
-  // Modus aus .env lesen — "groq" oder "ollama" (Standard: ollama)
   const mode = process.env.SERVER_MODE || "ollama";
-  const request = mode === "groq"
-    ? buildGroqRequest(messages)
+  const request = mode === "saia"
+    ? buildSaiaRequest(messages)
     : buildOllamaRequest(messages);
 
   try {
@@ -141,13 +126,13 @@ app.post("/api/chat", async (req, res) => {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error("API Fehler:", errorText);
       return res.status(response.status).json({ error: errorText });
     }
 
     const data = await response.json();
     const reply = extractReply(data, mode);
 
-    // Chatverlauf in Supabase speichern
     const scenario = await loadActiveSystemPrompt();
     await saveConversation(
       req.body.sessionId ?? "anonymous",
@@ -174,4 +159,3 @@ app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
   console.log(`Modus: ${mode.toUpperCase()}`);
 });
-
