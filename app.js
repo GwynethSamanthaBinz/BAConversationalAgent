@@ -27,12 +27,12 @@ async function loadSystemPrompt() {
       robotBg.classList.add("active");
       robotAvatar.classList.add("robot-speaking");
       characterStatus.textContent = "denkt nach …";
-      mouthLeds.forEach(led => led.setAttribute("fill", "#f97316"));
+      mouthLeds.forEach(led => led && led.setAttribute("fill", "#f97316"));
     } else {
       robotBg.classList.remove("active");
       robotAvatar.classList.remove("robot-speaking");
-      characterStatus.textContent = "wartet auf dich …";
-      mouthLeds.forEach(led => led.setAttribute("fill", "#d1d5db"));
+      characterStatus.textContent = "Luca wartet auf dich …";
+      mouthLeds.forEach(led => led && led.setAttribute("fill", "#d1d5db"));
     }
   }
 
@@ -102,7 +102,7 @@ async function loadSystemPrompt() {
     const response = await fetch(CONFIG.apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: conversationHistory }),
+      body: JSON.stringify({ messages: conversationHistory, sessionId: window.teilnehmerKuerzel ?? "anonymous" }),
     });
 
     if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
@@ -154,12 +154,24 @@ async function loadSystemPrompt() {
 
   sendButton.addEventListener("click", sendMessage);
 
-  const feedbackButton = document.getElementById("feedback-button");
-  feedbackButton.addEventListener("click", () => {
-    if (sendButton.disabled) return;
-    userInput.value = "Kannst du mir bitte Feedback zu meinem bisherigen Gesprächsverhalten geben? Was habe ich gut gemacht und was sollte ich verbessern?";
+  function triggerFeedback() {
+    if (typeof window.stopCountdownTimer === "function") window.stopCountdownTimer();
+    userInput.value = "Kannst du mir bitte Feedback zu meinem Gesprächsverhalten geben?";
     userInput.style.height = "auto";
     userInput.style.height = userInput.scrollHeight + "px";
-    sendMessage();
-  });
+    if (!sendButton.disabled) {
+      sendMessage();
+    } else {
+      const wait = setInterval(() => {
+        if (!sendButton.disabled) {
+          clearInterval(wait);
+          sendMessage();
+        }
+      }, 300);
+    }
+  }
+
+  const feedbackButton = document.getElementById("feedback-button");
+  feedbackButton.addEventListener("click", triggerFeedback);
+  window.triggerFeedback = triggerFeedback;
 })();

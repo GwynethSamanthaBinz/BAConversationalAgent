@@ -21,13 +21,16 @@
           Szenario: Luca trägt nicht zur gemeinsamen Gruppenarbeit bei
         </h1>
       </div>
-      <button
-        id="feedback-button"
-        class="shrink-0 bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
-               hover:bg-orange-50 active:bg-orange-100 transition"
-      >
-        Beenden und<br>Feedback anfordern
-      </button>
+      <div class="shrink-0 flex flex-col items-end gap-1">
+        <button
+          id="feedback-button"
+          class="bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
+                 hover:bg-orange-50 active:bg-orange-100 transition"
+        >
+          Beenden und<br>Feedback anfordern
+        </button>
+        <div id="timer-display" class="text-white text-base font-mono font-bold tabular-nums text-right hidden">10:00</div>
+      </div>
     </header>
 
     <!-- Hauptbereich: Hintergrund + Chat übereinander -->
@@ -46,36 +49,11 @@
       <!-- ── Roboter-Hintergrund ──────────────────────────────────── -->
       <div id="robot-bg" class="absolute inset-0 flex flex-col items-center justify-start pt-8 pointer-events-none z-0">
 
-        <div id="robot-avatar" class="rounded-full border-4 border-orange-400 bg-orange-50 flex items-center justify-center">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(0, 10)">
-              <line x1="50" y1="4" x2="50" y2="17" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
-              <circle cx="50" cy="4" r="4" fill="#f97316"/>
-              <rect x="14" y="17" width="72" height="54" rx="16" fill="#f3f4f6"/>
-              <rect x="14" y="17" width="72" height="54" rx="16" fill="none" stroke="#e5e7eb" stroke-width="1.5"/>
-              <rect x="6"  y="30" width="8" height="14" rx="4" fill="#d1d5db"/>
-              <rect x="86" y="30" width="8" height="14" rx="4" fill="#d1d5db"/>
-              <circle cx="34" cy="37" r="11" fill="white"/>
-              <circle cx="66" cy="37" r="11" fill="white"/>
-              <g class="robot-eye">
-                <circle cx="34" cy="37" r="7" fill="#f97316"/>
-                <circle cx="36" cy="35" r="2.5" fill="white" opacity="0.8"/>
-                <circle cx="34" cy="37" r="3" fill="#c2410c"/>
-              </g>
-              <g class="robot-eye">
-                <circle cx="66" cy="37" r="7" fill="#f97316"/>
-                <circle cx="68" cy="35" r="2.5" fill="white" opacity="0.8"/>
-                <circle cx="66" cy="37" r="3" fill="#c2410c"/>
-              </g>
-              <rect x="30" y="52" width="40" height="9" rx="4.5" fill="#e5e7eb"/>
-              <circle id="mouth-led-1" cx="38" cy="56.5" r="2.5" fill="#d1d5db"/>
-              <circle id="mouth-led-2" cx="50" cy="56.5" r="2.5" fill="#d1d5db"/>
-              <circle id="mouth-led-3" cx="62" cy="56.5" r="2.5" fill="#d1d5db"/>
-            </g>
-          </svg>
+        <div id="robot-avatar" class="rounded-full border-4 border-orange-400 bg-orange-50 flex items-center justify-center overflow-hidden">
+          <img src="KILucafoto.png" alt="Luca" class="w-full h-full object-cover" />
         </div>
 
-        <p id="character-status" class="mt-3 text-sm font-medium text-gray-500">wartet auf dich …</p>
+        <p id="character-status" class="mt-3 text-sm font-medium text-gray-500">Luca wartet auf dich …</p>
       </div>
 
       <!-- ── Chat-Verlauf ───────────────────────────────────────────── -->
@@ -120,9 +98,6 @@
           Es werden keinerlei personenbezogene Daten von dir erfasst.
           Alle gespeicherten Daten werden nach <strong>21 Tagen</strong> automatisch
           und vollständig gelöscht.
-          <p class="text-sm text-gray-600 leading-relaxed mb-6">
-            <strong>Vielen Dank für deine Teilnahme !</strong>
-          </p>
         </p>
         <button
           id="btn-datenschutz-ok"
@@ -131,6 +106,46 @@
         >
           OK
         </button>
+      </div>
+    </div>
+
+    <!-- ── Kürzel-Popup ─────────────────────────────────────────── -->
+    <div id="popup-kuerzel" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8">
+        <h2 class="text-lg font-bold text-gray-800 mb-1">Hinweise zum Testdurchlauf</h2>
+        <p class="text-sm text-gray-600 leading-relaxed mb-5">
+          Gib bitte deinen vorher festgelegten 4-stelligen Kürzel ein.
+        </p>
+        <p class="text-sm text-gray-600 leading-relaxed mb-5">
+          Bei Gesprächbeginn <strong>Start</strong> startet ein 10-minütiger Timer. Nach Ablauf der Zeit
+          wird dir dein Feedback ausgegeben. Du kannst das Gespräch jedoch jederzeit frühzeitig
+          beenden, indem du <strong class="text-gray-700">„Stop"</strong>,
+          <strong class="text-gray-700">„Ende"</strong>, oder
+          <strong class="text-gray-700">„Feedback"</strong> schreibst oder den Button
+          <strong class="text-gray-700">„Beenden und Feedback anfordern"</strong> drückst.
+        </p>
+        <p class="text-sm text-gray-600 leading-relaxed mb-5">
+          Im Anschluss erhältst du ein Briefing zur
+          Konfliktsituation – bitte lies es dir sorgfältig durch.
+        </p>
+        <input
+          id="kuerzel-input"
+          type="text"
+          inputmode="numeric"
+          maxlength="4"
+          placeholder="z. B. 1234"
+          class="w-full border border-gray-300 rounded-xl px-4 py-2 text-center text-2xl font-mono tracking-widest mb-2
+                 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+        />
+        <p id="kuerzel-error" class="text-xs text-red-500 mb-4 hidden">Bitte gib genau 4 Ziffern ein.</p>
+        <button
+          id="btn-kuerzel-ok"
+          class="w-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700
+                 text-white font-semibold py-2 rounded-xl transition"
+        >
+          Start
+        </button>
+        <p class="text-sm font-semibold text-gray-700 mt-5 text-center">Vielen Dank für deine Teilnahme!</p>
       </div>
     </div>
 
@@ -216,18 +231,87 @@
     </div>
 
     <script>
-      document.getElementById("btn-datenschutz-ok").addEventListener("click", function () {
-        document.getElementById("popup-datenschutz").classList.add("hidden");
-        document.getElementById("popup-briefing").classList.remove("hidden");
+      // ── Kürzel ────────────────────────────────────────────────────
+      const kuerzelInput = document.getElementById("kuerzel-input");
+      const kuerzelError = document.getElementById("kuerzel-error");
+
+      kuerzelInput.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "").slice(0, 4);
       });
 
+      kuerzelInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") document.getElementById("btn-kuerzel-ok").click();
+      });
+
+      document.getElementById("btn-kuerzel-ok").addEventListener("click", function () {
+        const val = kuerzelInput.value.trim();
+        if (/^\d{4}$/.test(val)) {
+          kuerzelError.classList.add("hidden");
+          window.teilnehmerKuerzel = val;
+          document.getElementById("popup-kuerzel").classList.add("hidden");
+          document.getElementById("popup-briefing").classList.remove("hidden");
+        } else {
+          kuerzelError.classList.remove("hidden");
+          kuerzelInput.focus();
+        }
+      });
+
+      // ── Datenschutz ───────────────────────────────────────────────
+      document.getElementById("btn-datenschutz-ok").addEventListener("click", function () {
+        document.getElementById("popup-datenschutz").classList.add("hidden");
+        document.getElementById("popup-kuerzel").classList.remove("hidden");
+        document.getElementById("kuerzel-input").focus();
+      });
+
+      // ── Briefing ──────────────────────────────────────────────────
       document.getElementById("btn-briefing-ok").addEventListener("click", function () {
         document.getElementById("popup-briefing").classList.add("hidden");
+        startCountdownTimer();
       });
 
       document.getElementById("briefing-button").addEventListener("click", function () {
         document.getElementById("popup-briefing").classList.remove("hidden");
       });
+
+      // ── Countdown-Timer ───────────────────────────────────────────
+      const TIMER_TOTAL = 10 * 60;
+      let timerInterval = null;
+      let timerSeconds  = TIMER_TOTAL;
+
+      function formatTime(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return `${m}:${String(sec).padStart(2, "0")}`;
+      }
+
+      function stopCountdownTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        const display = document.getElementById("timer-display");
+        if (display) display.textContent = "0:00";
+      }
+      window.stopCountdownTimer = stopCountdownTimer;
+
+      function startCountdownTimer() {
+        const display = document.getElementById("timer-display");
+        display.classList.remove("hidden");
+        timerSeconds = TIMER_TOTAL;
+        display.textContent = formatTime(timerSeconds);
+
+        timerInterval = setInterval(function () {
+          timerSeconds--;
+          display.textContent = formatTime(timerSeconds);
+          if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            display.textContent = "0:00";
+            if (typeof window.triggerFeedback === "function") {
+              window.triggerFeedback();
+            }
+          }
+        }, 1000);
+      }
     </script>
 
     <script src="config.js"></script>
