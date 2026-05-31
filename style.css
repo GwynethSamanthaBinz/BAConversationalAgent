@@ -46,10 +46,15 @@
   height: var(--avatar-container);
 }
 
-#robot-avatar svg,
-#robot-avatar img {
+#robot-avatar svg {
   width:  var(--avatar-svg);
   height: var(--avatar-svg);
+}
+
+#robot-avatar img {
+  width:  100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* ── Chat-Container: startet immer direkt unter dem Roboter ─── */
