@@ -45,7 +45,7 @@ document.getElementById("aufgaben-toggle").addEventListener("click", function ()
   const inhalt = document.getElementById("aufgaben-inhalt");
   const arrow  = document.getElementById("aufgaben-arrow");
   const hidden = inhalt.classList.toggle("hidden");
-  arrow.textContent = hidden ? "▸" : "▾";
+  arrow.textContent = hidden ? "▶" : "▼";
 });
 
 document.getElementById("aufgaben-szenario-btn").addEventListener("click", function () {
@@ -78,7 +78,7 @@ function stopCountdownTimer() {
 function startCountdownTimer() {
   if (timerInterval) clearInterval(timerInterval);
   const display = document.getElementById("timer-display");
-  display.classList.remove("hidden");
+  document.getElementById("timer-wrapper").classList.remove("hidden");
   timerSeconds = TIMER_TOTAL;
   display.textContent = formatTime(timerSeconds);
 
