@@ -24,36 +24,39 @@
       <div class="shrink-0 flex flex-col items-end gap-1">
         <button
           id="feedback-button"
-          class="bg-white text-orange-600 text-sm font-semibold px-4 py-2 rounded-xl
+          class="bg-white text-orange-600 text-sm font-medium px-5 py-2 rounded-xl
                  hover:bg-orange-50 active:bg-orange-100 transition"
         >
-          Beenden und<br>Feedback anfordern
+          Beenden &amp; Feedback anfordern
         </button>
-        <div id="timer-display" class="text-white text-base font-mono font-bold tabular-nums text-right hidden">10:00</div>
+        <div id="timer-wrapper" class="hidden flex items-center gap-2 text-white text-sm font-medium">
+          <span class="text-white">Verbleibende Gesprächszeit:</span>
+          <span id="timer-display" class="font-mono font-bold tabular-nums text-base">10:00</span>
+        </div>
       </div>
     </header>
 
     <!-- Hauptbereich: Hintergrund + Chat übereinander -->
     <div class="relative flex-1 overflow-hidden">
 
-      <!-- Aufgaben-Panel links neben Avatar -->
-      <div id="aufgaben-panel" class="absolute left-3 top-8 z-10 max-w-[115px]">
+      <!-- Aufgaben-Panel links, auf Höhe des ?-Buttons -->
+      <div id="aufgaben-panel" class="absolute left-3 top-2 z-10 max-w-[145px]">
         <div class="bg-white/60 rounded-xl p-3 shadow-sm">
           <button id="aufgaben-toggle"
-            class="w-full flex items-center justify-between gap-1 text-[11px] font-bold text-orange-700 active:text-orange-900 transition select-none">
-            Lucas Offene Aufgaben
-            <span id="aufgaben-arrow" class="text-orange-400 text-[10px] shrink-0">▾</span>
+            class="w-full flex items-start justify-between gap-1.5 text-[11px] font-bold text-orange-700 active:text-orange-900 transition select-none text-left">
+            <span>Offene Punkte<br>bei Luca</span>
+            <span id="aufgaben-arrow" class="text-orange-500 text-[13px] shrink-0 leading-none mt-0.5">▶</span>
           </button>
-          <div id="aufgaben-inhalt">
+          <div id="aufgaben-inhalt" class="hidden">
             <ul class="space-y-1.5 mt-2">
               <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
-                <span class="text-orange-400 shrink-0">•</span>Folien hochladen
+                <span class="text-orange-400 shrink-0">•</span>Literaturrecherche (10 Tage überfällig)
               </li>
               <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
-                <span class="text-orange-400 shrink-0">•</span>Recherche abschließen
+                <span class="text-orange-400 shrink-0">•</span>Folienentwurf (5 Tage überfällig)
               </li>
               <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
-                <span class="text-orange-400 shrink-0">•</span>Team informieren
+                <span class="text-orange-400 shrink-0">•</span>Keine Rückmeldung auf Teamanfragen
               </li>
             </ul>
             <button id="aufgaben-szenario-btn"
