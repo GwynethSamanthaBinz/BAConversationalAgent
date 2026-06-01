@@ -22,6 +22,10 @@
         </h1>
       </div>
       <div class="shrink-0 flex flex-col items-end gap-1">
+        <div id="timer-wrapper" class="hidden flex flex-row items-center gap-2 text-white text-sm font-medium">
+          <span class="text-white leading-snug text-right">Verbleibende<br>Gesprächszeit:</span>
+          <span id="timer-display" class="font-mono font-bold tabular-nums text-sm">10:00</span>
+        </div>
         <button
           id="feedback-button"
           class="bg-white text-orange-600 text-sm font-medium px-5 py-2 rounded-xl
@@ -29,10 +33,6 @@
         >
           Beenden &amp; Feedback<br>anfordern
         </button>
-        <div id="timer-wrapper" class="hidden flex flex-col items-end text-white text-sm font-medium">
-          <span class="text-white leading-snug">Verbleibende Gesprächszeit:</span>
-          <span id="timer-display" class="font-mono font-bold tabular-nums text-sm leading-snug">10:00</span>
-        </div>
       </div>
     </header>
 
@@ -150,7 +150,7 @@
           Bitte gib deinen Kürzel aus dem vorherigen Fragebogen an.
         </p>
         <p class="text-sm text-gray-600 leading-relaxed mb-5">
-          Bei Gesprächbeginn <strong>Start</strong> startet ein 10-minütiger Timer. Nach Ablauf der Zeit
+          Bei Gesprächbeginn startet ein 10-minütiger Timer. Nach Ablauf der Zeit
           wird dir dein Feedback ausgegeben. Du kannst das Gespräch jedoch jederzeit frühzeitig
           beenden, indem du <strong class="text-gray-700">„Stop"</strong>,
           <strong class="text-gray-700">„Ende"</strong>, oder
