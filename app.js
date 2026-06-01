@@ -1,3 +1,10 @@
+// ── Android Viewport-Height Fix ──────────────────────────────
+function fixBodyHeight() {
+  document.body.style.height = window.innerHeight + "px";
+}
+fixBodyHeight();
+window.addEventListener("resize", fixBodyHeight);
+
 // ── Popup-Logik ───────────────────────────────────────────────
 
 const kuerzelInput = document.getElementById("kuerzel-input");
