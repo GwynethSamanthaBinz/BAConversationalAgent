@@ -186,3 +186,15 @@ body {
 #user-input {
   max-height: 120px;
 }
+
+/* ── Android/iOS: Footer nicht von Navigationsleiste verdecken ── */
+footer {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Damit body-height auf älteren Android-Browsern korrekt bleibt */
+@supports not (height: 100dvh) {
+  body {
+    height: -webkit-fill-available;
+  }
+}

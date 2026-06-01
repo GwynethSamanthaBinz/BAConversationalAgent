@@ -1,3 +1,98 @@
+// ── Popup-Logik ───────────────────────────────────────────────
+
+const kuerzelInput = document.getElementById("kuerzel-input");
+const kuerzelError = document.getElementById("kuerzel-error");
+
+kuerzelInput.addEventListener("input", function () {
+  this.value = this.value.replace(/\D/g, "").slice(0, 4);
+});
+
+kuerzelInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") document.getElementById("btn-kuerzel-ok").click();
+});
+
+document.getElementById("btn-kuerzel-ok").addEventListener("click", function () {
+  const val = kuerzelInput.value.trim();
+  if (/^\d{4}$/.test(val)) {
+    kuerzelError.classList.add("hidden");
+    window.teilnehmerKuerzel = val;
+    document.getElementById("popup-kuerzel").classList.add("hidden");
+    document.getElementById("popup-briefing").classList.remove("hidden");
+  } else {
+    kuerzelError.classList.remove("hidden");
+    kuerzelInput.focus();
+  }
+});
+
+document.getElementById("btn-datenschutz-ok").addEventListener("click", function () {
+  document.getElementById("popup-datenschutz").classList.add("hidden");
+  document.getElementById("popup-kuerzel").classList.remove("hidden");
+  document.getElementById("kuerzel-input").focus();
+});
+
+document.getElementById("briefing-button").addEventListener("click", function () {
+  document.getElementById("popup-briefing").classList.remove("hidden");
+});
+
+document.getElementById("aufgaben-toggle").addEventListener("click", function () {
+  const inhalt = document.getElementById("aufgaben-inhalt");
+  const arrow  = document.getElementById("aufgaben-arrow");
+  const hidden = inhalt.classList.toggle("hidden");
+  arrow.textContent = hidden ? "▸" : "▾";
+});
+
+document.getElementById("aufgaben-szenario-btn").addEventListener("click", function () {
+  document.getElementById("popup-briefing").classList.remove("hidden");
+});
+
+// ── Countdown-Timer ───────────────────────────────────────────
+
+let triggerFeedback = null;
+
+const TIMER_TOTAL = 10 * 60;
+let timerInterval = null;
+let timerSeconds  = TIMER_TOTAL;
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${String(sec).padStart(2, "0")}`;
+}
+
+function stopCountdownTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  const display = document.getElementById("timer-display");
+  if (display) display.textContent = "0:00";
+}
+
+function startCountdownTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  const display = document.getElementById("timer-display");
+  display.classList.remove("hidden");
+  timerSeconds = TIMER_TOTAL;
+  display.textContent = formatTime(timerSeconds);
+
+  timerInterval = setInterval(function () {
+    timerSeconds--;
+    display.textContent = formatTime(timerSeconds);
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      display.textContent = "0:00";
+      if (typeof triggerFeedback === "function") triggerFeedback();
+    }
+  }, 1000);
+}
+
+document.getElementById("btn-briefing-ok").addEventListener("click", function () {
+  document.getElementById("popup-briefing").classList.add("hidden");
+  startCountdownTimer();
+});
+
+// ── Chat-Logik ────────────────────────────────────────────────
+
 async function loadSystemPrompt() {
   const response = await fetch(`${CONFIG.apiUrl.replace("/api/chat", "")}/api/scenario`);
   const data = await response.json();
@@ -154,8 +249,8 @@ async function loadSystemPrompt() {
 
   sendButton.addEventListener("click", sendMessage);
 
-  function triggerFeedback() {
-    if (typeof window.stopCountdownTimer === "function") window.stopCountdownTimer();
+  triggerFeedback = function () {
+    stopCountdownTimer();
     userInput.value = "Kannst du mir bitte Feedback zu meinem Gesprächsverhalten geben?";
     userInput.style.height = "auto";
     userInput.style.height = userInput.scrollHeight + "px";
@@ -169,9 +264,8 @@ async function loadSystemPrompt() {
         }
       }, 300);
     }
-  }
+  };
 
   const feedbackButton = document.getElementById("feedback-button");
   feedbackButton.addEventListener("click", triggerFeedback);
-  window.triggerFeedback = triggerFeedback;
 })();

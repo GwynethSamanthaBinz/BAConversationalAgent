@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
     <title>Conversational Agent – Bachelorarbeit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,6 +35,36 @@
 
     <!-- Hauptbereich: Hintergrund + Chat übereinander -->
     <div class="relative flex-1 overflow-hidden">
+
+      <!-- Aufgaben-Panel links neben Avatar -->
+      <div id="aufgaben-panel" class="absolute left-3 top-8 z-10 max-w-[115px]">
+        <div class="bg-white/60 rounded-xl p-3 shadow-sm">
+          <button id="aufgaben-toggle"
+            class="w-full flex items-center justify-between gap-1 text-[11px] font-bold text-orange-700 active:text-orange-900 transition select-none">
+            Lucas Offene Aufgaben
+            <span id="aufgaben-arrow" class="text-orange-400 text-[10px] shrink-0">▾</span>
+          </button>
+          <div id="aufgaben-inhalt">
+            <ul class="space-y-1.5 mt-2">
+              <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
+                <span class="text-orange-400 shrink-0">•</span>Folien hochladen
+              </li>
+              <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
+                <span class="text-orange-400 shrink-0">•</span>Recherche abschließen
+              </li>
+              <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
+                <span class="text-orange-400 shrink-0">•</span>Team informieren
+              </li>
+            </ul>
+            <button id="aufgaben-szenario-btn"
+              class="mt-2.5 w-full text-[11px] text-orange-600 font-semibold flex items-center justify-center gap-1
+                     bg-white rounded-xl shadow-sm py-1.5 px-2
+                     active:bg-orange-50 transition">
+              ↩ Konfliktszenario
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- ? Button: unterhalb des Headers, rechts positioniert -->
       <button
@@ -229,90 +259,6 @@
 
       </div>
     </div>
-
-    <script>
-      // ── Kürzel ────────────────────────────────────────────────────
-      const kuerzelInput = document.getElementById("kuerzel-input");
-      const kuerzelError = document.getElementById("kuerzel-error");
-
-      kuerzelInput.addEventListener("input", function () {
-        this.value = this.value.replace(/\D/g, "").slice(0, 4);
-      });
-
-      kuerzelInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") document.getElementById("btn-kuerzel-ok").click();
-      });
-
-      document.getElementById("btn-kuerzel-ok").addEventListener("click", function () {
-        const val = kuerzelInput.value.trim();
-        if (/^\d{4}$/.test(val)) {
-          kuerzelError.classList.add("hidden");
-          window.teilnehmerKuerzel = val;
-          document.getElementById("popup-kuerzel").classList.add("hidden");
-          document.getElementById("popup-briefing").classList.remove("hidden");
-        } else {
-          kuerzelError.classList.remove("hidden");
-          kuerzelInput.focus();
-        }
-      });
-
-      // ── Datenschutz ───────────────────────────────────────────────
-      document.getElementById("btn-datenschutz-ok").addEventListener("click", function () {
-        document.getElementById("popup-datenschutz").classList.add("hidden");
-        document.getElementById("popup-kuerzel").classList.remove("hidden");
-        document.getElementById("kuerzel-input").focus();
-      });
-
-      // ── Briefing ──────────────────────────────────────────────────
-      document.getElementById("btn-briefing-ok").addEventListener("click", function () {
-        document.getElementById("popup-briefing").classList.add("hidden");
-        startCountdownTimer();
-      });
-
-      document.getElementById("briefing-button").addEventListener("click", function () {
-        document.getElementById("popup-briefing").classList.remove("hidden");
-      });
-
-      // ── Countdown-Timer ───────────────────────────────────────────
-      const TIMER_TOTAL = 10 * 60;
-      let timerInterval = null;
-      let timerSeconds  = TIMER_TOTAL;
-
-      function formatTime(s) {
-        const m = Math.floor(s / 60);
-        const sec = s % 60;
-        return `${m}:${String(sec).padStart(2, "0")}`;
-      }
-
-      function stopCountdownTimer() {
-        if (timerInterval) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-        }
-        const display = document.getElementById("timer-display");
-        if (display) display.textContent = "0:00";
-      }
-      window.stopCountdownTimer = stopCountdownTimer;
-
-      function startCountdownTimer() {
-        const display = document.getElementById("timer-display");
-        display.classList.remove("hidden");
-        timerSeconds = TIMER_TOTAL;
-        display.textContent = formatTime(timerSeconds);
-
-        timerInterval = setInterval(function () {
-          timerSeconds--;
-          display.textContent = formatTime(timerSeconds);
-          if (timerSeconds <= 0) {
-            clearInterval(timerInterval);
-            display.textContent = "0:00";
-            if (typeof window.triggerFeedback === "function") {
-              window.triggerFeedback();
-            }
-          }
-        }, 1000);
-      }
-    </script>
 
     <script src="config.js"></script>
     <script src="app.js"></script>
