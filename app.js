@@ -55,6 +55,7 @@ document.getElementById("aufgaben-szenario-btn").addEventListener("click", funct
 // ── Countdown-Timer ───────────────────────────────────────────
 
 let triggerFeedback = null;
+let timerStarted = false;
 
 const TIMER_TOTAL = 10 * 60;
 let timerInterval = null;
@@ -95,7 +96,10 @@ function startCountdownTimer() {
 
 document.getElementById("btn-briefing-ok").addEventListener("click", function () {
   document.getElementById("popup-briefing").classList.add("hidden");
-  startCountdownTimer();
+  if (!timerStarted) {
+    timerStarted = true;
+    startCountdownTimer();
+  }
 });
 
 // ── Chat-Logik ────────────────────────────────────────────────

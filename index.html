@@ -15,15 +15,15 @@
 
     <!-- Header -->
     <header class="bg-orange-600 text-white px-6 py-3 shadow-md shrink-0 relative z-20 flex items-center justify-between gap-4">
-      <div class="flex-1 min-w-0">
+      <div class="flex-1 min-w-0 overflow-visible">
         <p class="text-xs font-semibold uppercase tracking-widest text-orange-200 pr-1">Konfliktgespräch</p>
-        <h1 class="text-base font-medium leading-snug">
+        <h1 class="text-base font-medium leading-snug break-words">
           Szenario: Luca trägt nicht zur gemeinsamen Gruppenarbeit bei
         </h1>
       </div>
       <div class="shrink-0 flex flex-col items-end gap-1">
         <div id="timer-wrapper" class="hidden flex flex-row items-center gap-2 text-white text-sm font-medium">
-          <span class="text-white leading-snug text-right">Verbleibende<br>Gesprächszeit:</span>
+          <span class="text-white">Testing Zeit:</span>
           <span id="timer-display" class="font-mono font-bold tabular-nums text-sm">10:00</span>
         </div>
         <button
@@ -63,7 +63,7 @@
               class="mt-2.5 w-full text-xs text-orange-600 font-semibold flex items-center justify-center gap-1
                      bg-white rounded-xl shadow-sm py-1.5 px-2
                      active:bg-orange-50 transition">
-              ↩ Konfliktszenario
+              Mehr zum Konfliktszenario
             </button>
           </div>
         </div>
@@ -159,7 +159,7 @@
         </p>
         <p class="text-sm text-gray-600 leading-relaxed mb-5">
           Im Anschluss erhältst du ein Briefing zur
-          Konfliktsituation – bitte lies es dir sorgfältig durch.
+          Konfliktsituation, bitte lese es dir sorgfältig durch.
         </p>
         <input
           id="kuerzel-input"
