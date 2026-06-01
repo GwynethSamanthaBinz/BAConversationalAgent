@@ -69,6 +69,7 @@ function stopCountdownTimer() {
 }
 
 function startCountdownTimer() {
+  if (timerInterval) clearInterval(timerInterval);
   const display = document.getElementById("timer-display");
   display.classList.remove("hidden");
   timerSeconds = TIMER_TOTAL;
