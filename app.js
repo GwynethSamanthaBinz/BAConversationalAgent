@@ -219,6 +219,10 @@ async function loadSystemPrompt() {
     const text = userInput.value.trim();
     if (!text) return;
 
+    if (/\b(stop|ende|feedback)\b/i.test(text)) {
+      stopCountdownTimer();
+    }
+
     userInput.value = "";
     userInput.style.height = "auto";
     sendButton.disabled = true;

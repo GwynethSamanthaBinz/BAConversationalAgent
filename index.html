@@ -15,8 +15,8 @@
 
     <!-- Header -->
     <header class="bg-orange-600 text-white px-6 py-3 shadow-md shrink-0 relative z-20 flex items-center justify-between gap-4">
-      <div class="min-w-0 overflow-hidden">
-        <p class="text-xs font-semibold uppercase tracking-widest text-orange-200">Konfliktgespräch</p>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-semibold uppercase tracking-widest text-orange-200 pr-1">Konfliktgespräch</p>
         <h1 class="text-base font-medium leading-snug">
           Szenario: Luca trägt nicht zur gemeinsamen Gruppenarbeit bei
         </h1>
@@ -25,13 +25,13 @@
         <button
           id="feedback-button"
           class="bg-white text-orange-600 text-sm font-medium px-5 py-2 rounded-xl
-                 hover:bg-orange-50 active:bg-orange-100 transition"
+                 hover:bg-orange-50 active:bg-orange-100 transition text-center leading-snug"
         >
-          Beenden &amp; Feedback anfordern
+          Beenden &amp; Feedback<br>anfordern
         </button>
-        <div id="timer-wrapper" class="hidden flex items-center gap-2 text-white text-sm font-medium">
-          <span class="text-white">Verbleibende Gesprächszeit:</span>
-          <span id="timer-display" class="font-mono font-bold tabular-nums text-base">10:00</span>
+        <div id="timer-wrapper" class="hidden flex flex-col items-end text-white text-sm font-medium">
+          <span class="text-white leading-snug">Verbleibende Gesprächszeit:</span>
+          <span id="timer-display" class="font-mono font-bold tabular-nums text-sm leading-snug">10:00</span>
         </div>
       </div>
     </header>
@@ -43,24 +43,24 @@
       <div id="aufgaben-panel" class="absolute left-3 top-2 z-10 max-w-[145px]">
         <div class="bg-white/60 rounded-xl p-3 shadow-sm">
           <button id="aufgaben-toggle"
-            class="w-full flex items-start justify-between gap-1.5 text-[11px] font-bold text-orange-700 active:text-orange-900 transition select-none text-left">
+            class="w-full flex items-start justify-between gap-1.5 text-xs font-bold text-orange-700 active:text-orange-900 transition select-none text-left">
             <span>Offene Punkte<br>bei Luca</span>
-            <span id="aufgaben-arrow" class="text-orange-500 text-[13px] shrink-0 leading-none mt-0.5">▶</span>
+            <span id="aufgaben-arrow" class="text-orange-500 text-sm shrink-0 leading-none mt-0.5">▶</span>
           </button>
           <div id="aufgaben-inhalt" class="hidden">
             <ul class="space-y-1.5 mt-2">
-              <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
+              <li class="flex items-start gap-1.5 text-xs text-orange-600 leading-snug">
                 <span class="text-orange-400 shrink-0">•</span>Literaturrecherche (10 Tage überfällig)
               </li>
-              <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
+              <li class="flex items-start gap-1.5 text-xs text-orange-600 leading-snug">
                 <span class="text-orange-400 shrink-0">•</span>Folienentwurf (5 Tage überfällig)
               </li>
-              <li class="flex items-start gap-1.5 text-[11px] text-orange-600 leading-snug">
+              <li class="flex items-start gap-1.5 text-xs text-orange-600 leading-snug">
                 <span class="text-orange-400 shrink-0">•</span>Keine Rückmeldung auf Teamanfragen
               </li>
             </ul>
             <button id="aufgaben-szenario-btn"
-              class="mt-2.5 w-full text-[11px] text-orange-600 font-semibold flex items-center justify-center gap-1
+              class="mt-2.5 w-full text-xs text-orange-600 font-semibold flex items-center justify-center gap-1
                      bg-white rounded-xl shadow-sm py-1.5 px-2
                      active:bg-orange-50 transition">
               ↩ Konfliktszenario
@@ -147,7 +147,7 @@
       <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8">
         <h2 class="text-lg font-bold text-gray-800 mb-1">Hinweise zum Testdurchlauf</h2>
         <p class="text-sm text-gray-600 leading-relaxed mb-5">
-          Gib bitte deinen vorher festgelegten 4-stelligen Kürzel ein.
+          Bitte gib deinen Kürzel aus dem vorherigen Fragebogen an.
         </p>
         <p class="text-sm text-gray-600 leading-relaxed mb-5">
           Bei Gesprächbeginn <strong>Start</strong> startet ein 10-minütiger Timer. Nach Ablauf der Zeit
