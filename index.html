@@ -27,10 +27,10 @@
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
           <button id="aufgaben-toggle"
-            class="bg-white text-orange-600 text-sm font-medium px-4 py-2 rounded-xl
+            class="bg-white text-orange-600 text-sm font-medium px-3 py-1.5 rounded-xl
                    hover:bg-orange-50 active:bg-orange-100 transition flex items-center gap-1.5 select-none leading-snug">
             <span class="shrink-0">★</span>
-            <span>Offene Punkte bei Luca</span>
+            <span>Offene Punkte<br>bei Luca</span>
             <span id="aufgaben-arrow" class="text-orange-400 shrink-0 leading-none">▶</span>
           </button>
           <div id="aufgaben-inhalt" class="hidden mt-2">
@@ -59,10 +59,6 @@
           </div>
         </div>
         <div class="shrink-0 flex flex-col items-end gap-1">
-          <div id="timer-wrapper" class="hidden flex flex-row items-center gap-2 text-white text-sm font-medium">
-            <span class="text-white">Testing Zeit:</span>
-            <span id="timer-display" class="font-mono font-bold tabular-nums text-sm">10:00</span>
-          </div>
           <button
             id="feedback-button"
             class="bg-white text-orange-600 text-sm font-medium px-5 py-2 rounded-xl
@@ -70,6 +66,10 @@
           >
             Beenden &amp; Feedback<br>anfordern
           </button>
+          <div id="timer-wrapper" class="hidden flex flex-row items-center gap-2 text-white text-sm font-medium">
+            <span class="text-white">Testing Zeit:</span>
+            <span id="timer-display" class="font-mono font-bold tabular-nums text-sm">10:00</span>
+          </div>
         </div>
       </div>
     </header>
