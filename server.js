@@ -36,13 +36,26 @@ async function loadActiveSystemPrompt() {
   return data;
 }
 
-// Speichert den Chatverlauf in Supabase
+// Speichert den Chatverlauf in Supabase (update wenn Session schon existiert, sonst insert)
 async function saveConversation(sessionId, scenarioId, messages) {
-  await supabase.from("conversations").insert({
-    session_id: sessionId,
-    scenario_id: scenarioId,
-    messages: messages,
-  });
+  const { data: existing } = await supabase
+    .from("conversations")
+    .select("id")
+    .eq("session_id", sessionId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase
+      .from("conversations")
+      .update({ messages, scenario_id: scenarioId })
+      .eq("id", existing.id);
+  } else {
+    await supabase.from("conversations").insert({
+      session_id: sessionId,
+      scenario_id: scenarioId,
+      messages: messages,
+    });
+  }
 }
 
 const app = express();
