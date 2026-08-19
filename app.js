@@ -7,36 +7,6 @@ window.addEventListener("resize", fixBodyHeight);
 
 // ── Popup-Logik ───────────────────────────────────────────────
 
-const kuerzelInput = document.getElementById("kuerzel-input");
-const kuerzelError = document.getElementById("kuerzel-error");
-
-kuerzelInput.addEventListener("input", function () {
-  this.value = this.value.replace(/\D/g, "").slice(0, 4);
-});
-
-kuerzelInput.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") document.getElementById("btn-kuerzel-ok").click();
-});
-
-document.getElementById("btn-kuerzel-ok").addEventListener("click", function () {
-  const val = kuerzelInput.value.trim();
-  if (/^\d{4}$/.test(val)) {
-    kuerzelError.classList.add("hidden");
-    window.teilnehmerKuerzel = val;
-    document.getElementById("popup-kuerzel").classList.add("hidden");
-    document.getElementById("popup-briefing").classList.remove("hidden");
-  } else {
-    kuerzelError.classList.remove("hidden");
-    kuerzelInput.focus();
-  }
-});
-
-document.getElementById("btn-datenschutz-ok").addEventListener("click", function () {
-  document.getElementById("popup-datenschutz").classList.add("hidden");
-  document.getElementById("popup-kuerzel").classList.remove("hidden");
-  document.getElementById("kuerzel-input").focus();
-});
-
 document.getElementById("briefing-button").addEventListener("click", function () {
   document.getElementById("popup-briefing").classList.remove("hidden");
 });
@@ -52,54 +22,10 @@ document.getElementById("aufgaben-szenario-btn").addEventListener("click", funct
   document.getElementById("popup-briefing").classList.remove("hidden");
 });
 
-// ── Countdown-Timer ───────────────────────────────────────────
-
 let triggerFeedback = null;
-let timerStarted = false;
-
-const TIMER_TOTAL = 10 * 60;
-let timerInterval = null;
-let timerSeconds  = TIMER_TOTAL;
-
-function formatTime(s) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${String(sec).padStart(2, "0")}`;
-}
-
-function stopCountdownTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-  const display = document.getElementById("timer-display");
-  if (display) display.textContent = "0:00";
-}
-
-function startCountdownTimer() {
-  if (timerInterval) clearInterval(timerInterval);
-  const display = document.getElementById("timer-display");
-  document.getElementById("timer-wrapper").classList.remove("hidden");
-  timerSeconds = TIMER_TOTAL;
-  display.textContent = formatTime(timerSeconds);
-
-  timerInterval = setInterval(function () {
-    timerSeconds--;
-    display.textContent = formatTime(timerSeconds);
-    if (timerSeconds <= 0) {
-      clearInterval(timerInterval);
-      display.textContent = "0:00";
-      if (typeof triggerFeedback === "function") triggerFeedback();
-    }
-  }, 1000);
-}
 
 document.getElementById("btn-briefing-ok").addEventListener("click", function () {
   document.getElementById("popup-briefing").classList.add("hidden");
-  if (!timerStarted) {
-    timerStarted = true;
-    startCountdownTimer();
-  }
 });
 
 // ── Chat-Logik ────────────────────────────────────────────────
@@ -208,7 +134,7 @@ async function loadSystemPrompt() {
     const response = await fetch(CONFIG.apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: conversationHistory, sessionId: window.teilnehmerKuerzel ?? "anonymous" }),
+      body: JSON.stringify({ messages: conversationHistory }),
     });
 
     if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
@@ -222,10 +148,6 @@ async function loadSystemPrompt() {
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
-
-    if (/\b(stop|ende|feedback)\b/i.test(text)) {
-      stopCountdownTimer();
-    }
 
     userInput.value = "";
     userInput.style.height = "auto";
@@ -265,7 +187,6 @@ async function loadSystemPrompt() {
   sendButton.addEventListener("click", sendMessage);
 
   triggerFeedback = function () {
-    stopCountdownTimer();
     userInput.value = "Kannst du mir bitte Feedback zu meinem Gesprächsverhalten geben?";
     userInput.style.height = "auto";
     userInput.style.height = userInput.scrollHeight + "px";
@@ -283,4 +204,19 @@ async function loadSystemPrompt() {
 
   const feedbackButton = document.getElementById("feedback-button");
   feedbackButton.addEventListener("click", triggerFeedback);
+
+  document.getElementById("download-button").addEventListener("click", function () {
+    const lines = conversationHistory
+      .filter(m => m.role !== "system")
+      .map(m => `${m.role === "user" ? "Du" : "Luca"}: ${m.content}`)
+      .join("\n\n");
+    if (!lines) return;
+    const blob = new Blob([lines], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "chatverlauf-luca.txt";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 })();

@@ -1,62 +1,14 @@
-// ─────────────────────────────────────────────────────────────
-// Backend-Server für den Conversational Agent
-//
-// DATENFLUSS:
-//   Browser → POST /api/chat → server.js → SAIA API → Antwort zurück
-//
-// LOKAL STARTEN:
-//   node server.js  (oder: npm start)
-// ─────────────────────────────────────────────────────────────
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
 import { fileURLToPath } from "url";
 import path from "path";
+import { SYSTEM_PROMPT } from "./system_prompt.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-);
-
-// Lädt den aktiven Systemprompt aus Supabase
-async function loadActiveSystemPrompt() {
-  const { data, error } = await supabase
-    .from("scenarios")
-    .select("id, system_prompt")
-    .eq("active", true)
-    .single();
-  if (error || !data) return null;
-  return data;
-}
-
-// Speichert den Chatverlauf in Supabase (update wenn Session schon existiert, sonst insert)
-async function saveConversation(sessionId, scenarioId, messages) {
-  const { data: existing } = await supabase
-    .from("conversations")
-    .select("id")
-    .eq("session_id", sessionId)
-    .maybeSingle();
-
-  if (existing) {
-    await supabase
-      .from("conversations")
-      .update({ messages, scenario_id: scenarioId })
-      .eq("id", existing.id);
-  } else {
-    await supabase.from("conversations").insert({
-      session_id: sessionId,
-      scenario_id: scenarioId,
-      messages: messages,
-    });
-  }
-}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -64,8 +16,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
-
-// ── Hilfsfunktionen ────────────────────────────────────────────
 
 function buildSaiaRequest(messages) {
   return {
@@ -84,8 +34,6 @@ function buildSaiaRequest(messages) {
 function extractReply(data) {
   return data.choices?.[0]?.message?.content ?? "(Keine Antwort)";
 }
-
-// ── Haupt-Endpunkt ─────────────────────────────────────────────
 
 app.post("/api/chat", async (req, res) => {
   const { messages } = req.body;
@@ -110,16 +58,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const data = await response.json();
-    const reply = extractReply(data);
-
-    const scenario = await loadActiveSystemPrompt();
-    await saveConversation(
-      req.body.sessionId ?? "anonymous",
-      scenario?.id ?? null,
-      messages
-    );
-
-    res.json({ reply });
+    res.json({ reply: extractReply(data) });
 
   } catch (error) {
     console.error("Fehler beim API-Aufruf:", error);
@@ -127,10 +66,8 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.get("/api/scenario", async (req, res) => {
-  const scenario = await loadActiveSystemPrompt();
-  if (!scenario) return res.status(404).json({ error: "Kein aktives Szenario" });
-  res.json(scenario);
+app.get("/api/scenario", (req, res) => {
+  res.json({ system_prompt: SYSTEM_PROMPT });
 });
 
 app.listen(PORT, () => {

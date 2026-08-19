@@ -12,7 +12,7 @@ LLM: Qwen3.6-35b-a3b über SAIA Academic Cloud API
 
 ### Voraussetzungen
 - Node.js installiert
-- `.env` Datei im Projektordner mit allen Keys (Vorlage: `.env.example` wurde entfernt, Keys direkt bei Gwyneth anfragen)
+- `.env` Datei im Projektordner mit den Keys (SAIA_API_KEY, SAIA_MODEL, SERVER_MODE)
 
 ### Server starten
 ```bash
