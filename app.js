@@ -71,7 +71,7 @@ async function loadSystemPrompt() {
   function createBubble(role) {
     const wrapper = document.createElement("div");
     const alignment = role === "user" ? "justify-end" : "justify-center";
-    wrapper.classList.add("flex", "mb-4", "bubble-rise", "px-2", alignment);
+    wrapper.classList.add("flex", "mb-4", "bubble-rise", "px-4", "max-w-3xl", "mx-auto", "w-full", alignment);
 
     const bubble = document.createElement("div");
     bubble.classList.add(role === "user" ? "user-bubble" : "assistant-bubble");
