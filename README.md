@@ -3,16 +3,15 @@
 informationen 
 
 Architektur 
-Frontend: HTML, CSS (Tailwind), JS → Netlify
+Frontend: HTML, CSS (Tailwind), JS → Render
 Backend: Node.js / Express → Render
-Datenbank: Supabase
 LLM: Qwen3.6-35b-a3b über SAIA Academic Cloud API
 
 ## Lokale Entwicklung
 
 ### Voraussetzungen
 - Node.js installiert
-- `.env` Datei im Projektordner mit allen Keys (Vorlage: `.env.example` wurde entfernt, Keys direkt bei Gwyneth anfragen)
+- `.env` Datei im Projektordner mit den Keys (SAIA_API_KEY, SAIA_MODEL)
 
 ### Server starten
 ```bash
@@ -20,7 +19,8 @@ cd BAConversationalAgent
 npm install        # nur beim ersten Mal oder nach neuen Paketen
 node server.js     # Server starten
 ```
-App läuft dann auf: http://localhost:3000
+App läuft dann (standart) auf: 
+http://localhost:3000
 
 ### Server stoppen
 Strg+C im Terminal
@@ -32,15 +32,14 @@ Strg+C im Terminal
 2. Änderungen machen & lokal testen:
    - `node server.js` starten
    - Browser: `http://localhost:3000`
-   - API-Anfragen gehen automatisch zu Render (kein lokales LLM nötig)
+   - API-Anfragen gehen an den lokalen Server (SAIA_API_KEY in .env erforderlich)
 3. Fertig → commit & push
-4. In `main` mergen → Netlify deployed automatisch
+4. In `main` mergen → Render deployed automatisch
 
 ---
 
-## Live-URLs
-- **Frontend:** https://ba-conversational-agent.netlify.app
-- **Backend:** https://baconversationalagent.onrender.com
+## Live-URL
+- https://baconversationalagent.onrender.com
 
 ---
 
@@ -56,7 +55,8 @@ Strg+C im Terminal
 
 ## Wichtige Dateien
 - `.env` → API Keys (nicht auf GitHub, nicht committen!)
-- `config.js` → Frontend-Konfiguration (Render-URL)
+- `config.js` → Frontend-Konfiguration
+- `system_prompt.js` → System Prompt für Luca
 - `server.js` → Backend-Server
 
 ---
